@@ -1,0 +1,197 @@
+{
+    "status": "SUCCESS",
+    "data": {
+        "title": "Scora - Your Nutrition Intelligence Coach",
+        "skip_option": "Just explore",
+        "screens": [
+            {
+                "id": 1,
+                "type": "intro",
+                "title": "You eat over 1,000 meals a year.",
+                "subtitle": "Each one shapes your energy, heart, and brain over time.",
+                "button_text": "Continue"
+            },
+            {
+                "id": 2,
+                "type": "problem_statement",
+                "title": "Everyone's tracking something, but no one's tracking nutrition quality.",
+                "body": [
+                    {
+                        "text": "Maybe you use a fitness or sleep tracker to follow recovery and heart rate.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "Maybe you're managing weight on GLP-1 or other weight-loss medication.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "Maybe you've noticed changes like lower energy, glucose spikes, or post-menopausal shifts.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "Wherever you are, nutrition quality is your strongest lever.",
+                        "style": "highlighted"
+                    },
+                    {
+                        "text": "It defines how your heart, brain, gut, and metabolism respond, and how you age.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "Continue"
+            },
+            {
+                "id": 3,
+                "type": "value_proposition",
+                "title": "Numbers don't tell the full story.",
+                "body": [
+                    {
+                        "text": "Calories, macros, steps, and sleep scores are just data.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "They don't show how your meals affect your heart, brain, gut, and metabolism in real time.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "SCORA closes that gap by translating what you eat into how your body actually responds.",
+                        "style": "highlighted"
+                    }
+                ],
+                "button_text": "See the new way"
+            },
+            {
+                "id": 4,
+                "type": "features_overview",
+                "title": "Meet your Three Scores.",
+                "items": [
+                    {
+                        "number": 1,
+                        "name": "Meal Quality",
+                        "icon": "leaf",
+                        "description": "How clean, balanced, and protein-rich your meals are"
+                    },
+                    {
+                        "number": 2,
+                        "name": "Biology Impact",
+                        "icon": "heartbeat",
+                        "description": "How your meals affect heart, brain, gut, and metabolism"
+                    },
+                    {
+                        "number": 3,
+                        "name": "Nutrition Load",
+                        "icon": "heart",
+                        "description": "Your overall nutrient coverage for recovery and vitality"
+                    }
+                ],
+                "button_text": "See Biology Impact"
+            },
+            {
+                "id": 5,
+                "type": "feature_detail",
+                "title": "Your Biology Impact shows how food affects your four key systems.",
+                "example": {
+                    "meal": "Avocado toast with latte",
+                    "metrics": [
+                        {
+                            "name": "Heart Load",
+                            "value": "Light",
+                            "icon": "heart",
+                            "color": "green"
+                        },
+                        {
+                            "name": "Brain Clarity",
+                            "value": "High",
+                            "icon": "brain",
+                            "color": "green"
+                        },
+                        {
+                            "name": "Gut Ease",
+                            "value": "Balanced",
+                            "icon": "gut",
+                            "color": "green"
+                        },
+                        {
+                            "name": "Metabolic Balance",
+                            "value": "Moderate",
+                            "icon": "metabolism",
+                            "color": "orange"
+                        }
+                    ],
+                    "suggestion": "Add a protein side or cut the sugar for a smoother impact."
+                },
+                "button_text": "What's a good score?"
+            },
+            {
+                "id": 6,
+                "type": "score_explanation",
+                "title": "Aim for 80 or higher.",
+                "body": [
+                    {
+                        "text": "Scores of 80 or above improve metabolic balance and lower heart and gut load.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "Over time, they build a younger BioAge, your compass for nutrition quality.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "Find your starting score"
+            },
+            {
+                "id": 7,
+                "type": "question",
+                "question": "How would you describe your eating style most days?",
+                "options": [
+                    "Home cooked",
+                    "Takeout",
+                    "Mixed",
+                    "Travel often"
+                ]
+            },
+            {
+                "id": 8,
+                "type": "question",
+                "question": "What does your first meal usually look like?",
+                "options": [
+                    "Balanced meal",
+                    "Coffee only",
+                    "Quick snack",
+                    "Often skipped"
+                ]
+            },
+            {
+                "id": 9,
+                "type": "question",
+                "question": "What's your main cooking oil or fat at home?",
+                "options": [
+                    "Olive or avocado oil",
+                    "Butter",
+                    "Vegetable oil",
+                    "Mixed"
+                ]
+            },
+            {
+                "id": 10,
+                "type": "question",
+                "question": "What kind of snacks show up most in your week?",
+                "options": [
+                    "Packaged snacks",
+                    "Nuts or fruit",
+                    "Chips or desserts",
+                    "Skip snacks"
+                ]
+            },
+            {
+                "id": 11,
+                "type": "question",
+                "question": "Do you include a source of protein at your first meal?",
+                "options": [
+                    "Rarely",
+                    "Sometimes",
+                    "Most days",
+                    "Always"
+                ]
+            }
+        ]
+    }
+}

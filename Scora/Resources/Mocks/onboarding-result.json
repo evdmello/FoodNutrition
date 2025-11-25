@@ -1,0 +1,140 @@
+{
+    "status": "SUCCESS",
+    "data": {
+        "title": "Scora - Your Nutrition Intelligence Coach",
+        "screens": [
+            {
+                "id": 12,
+                "type": "results",
+                "title": "Your Biology Impact score is ready.",
+                "score_display": {
+                    "value": 77,
+                    "label": "Biology Impact Score",
+                    "color": "green"
+                },
+                "body": [
+                    {
+                        "text": "We'll learn more as you log, but let's start moving toward 80 plus, where your biology runs at its best.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "See my plan"
+            },
+            {
+                "id": 13,
+                "type": "confirmation",
+                "title": "Your personalized plan is ready.",
+                "body": [
+                    {
+                        "text": "We've set daily and weekly goals to improve your Biology Impact through better meal composition and timing.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "Continue"
+            },
+            {
+                "id": 14,
+                "type": "concept_intro",
+                "title": "Introducing BioAge.",
+                "body": [
+                    {
+                        "text": "Your weekly BioAge shows how your nutrition quality shapes how you age.",
+                        "style": "normal"
+                    },
+                    {
+                        "text": "A younger BioAge means steadier energy, sharper focus, and stronger health.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "Continue"
+            },
+            {
+                "id": 15,
+                "type": "program_selection",
+                "title": "Choose your starting program.",
+                "subtitle": "Pick the one that fits your goal. You can switch anytime.",
+                "programs": [
+                    {
+                        "id": "metabolic_reset",
+                        "name": "Metabolic Reset",
+                        "description": "6-week program to optimize blood sugar and energy"
+                    },
+                    {
+                        "id": "gut_restore",
+                        "name": "Gut Restore",
+                        "description": "4-week program to improve digestion and gut health"
+                    },
+                    {
+                        "id": "muscle_rebuild",
+                        "name": "Muscle Rebuild",
+                        "description": "8-week program for muscle growth and recovery"
+                    }
+                ]
+            },
+            {
+                "id": 16,
+                "type": "weekly_goals",
+                "title": "This week, do just two things.",
+                "goals": [
+                    {
+                        "number": 1,
+                        "title": "Have a protein-first breakfast",
+                        "details": "25 to 30 grams of protein"
+                    },
+                    {
+                        "number": 2,
+                        "title": "Cut late-night snacking",
+                        "details": "Twice this week"
+                    }
+                ],
+                "body": [
+                    {
+                        "text": "Small shifts create big change in your Biology Impact.",
+                        "style": "normal"
+                    }
+                ],
+                "button_text": "Show my Day 1 plan"
+            },
+            {
+                "id": 17,
+                "type": "daily_instructions",
+                "title": "Your Day 1 in 30 seconds.",
+                "steps": [
+                    {
+                        "number": 1,
+                        "text": "Log one meal by photo or voice."
+                    },
+                    {
+                        "number": 2,
+                        "text": "Aim for a Biology Impact score above 80."
+                    },
+                    {
+                        "number": 3,
+                        "text": "Watch your BioAge trend improve by evening."
+                    }
+                ],
+                "button_text": "Continue"
+            },
+            {
+                "id": 18,
+                "type": "final_summary",
+                "title": "What you get inside SCORA.",
+                "benefits": [
+                    {
+                        "icon": "heartbeat",
+                        "text": "Real-time Biology Impact for heart, brain, gut, and metabolism"
+                    },
+                    {
+                        "icon": "leaf",
+                        "text": "Personalized coaching to lower your daily impact score"
+                    },
+                    {
+                        "icon": "heart",
+                        "text": "Weekly BioAge updates and next-week focus cues"
+                    }
+                ],
+                "button_text": "Start"
+            }
+        ]
+    }
+}
