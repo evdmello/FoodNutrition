@@ -10,7 +10,7 @@ import SwiftUI
 import Supabase
 
 struct MainAppView: View {
-    @State private var selectedTab = 0
+    @State private var selectedTab = 1
     @State private var isValidatingSession = false
     let onSignOut: () -> Void
 
@@ -55,10 +55,8 @@ struct MainAppView: View {
         isValidatingSession = true
 
         do {
-            // Validate the current session
             let session = try await supabase.auth.session
 
-            // Check if session is expired
             let currentDate = Date()
             let expiresAt = Date(timeIntervalSince1970: TimeInterval(session.expiresAt))
 

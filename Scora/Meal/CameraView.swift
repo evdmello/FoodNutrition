@@ -9,48 +9,264 @@ import SwiftUI
 
 struct CameraView: View {
     @Environment(\.dismiss) var dismiss
+    @StateObject private var cameraManager = CameraManager()
+    @State private var showImagePreview = false
+    @State private var isAnalyzing = false
+    @State private var showError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         ZStack {
-            AppColors.background.ignoresSafeArea()
+            Color.black.ignoresSafeArea()
 
-            VStack {
+            VStack(spacing: 0) {
+                // Top bar with controls
                 HStack {
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark")
-                            .foregroundColor(AppColors.textPrimary)
+                            .foregroundColor(.white)
                             .font(.system(size: 20))
                             .padding()
                     }
 
                     Spacer()
+
+                    // Auto-capture toggle
+                    HStack(spacing: 8) {
+                        Image(systemName: cameraManager.isAutoCaptureEnabled ? "eye.fill" : "hand.tap.fill")
+                            .foregroundColor(.white)
+                            .font(.system(size: 16))
+
+                        Text(cameraManager.isAutoCaptureEnabled ? "Auto" : "Manual")
+                            .foregroundColor(.white)
+                            .font(.system(size: 14, weight: .medium))
+
+                        Toggle("", isOn: $cameraManager.isAutoCaptureEnabled)
+                            .labelsHidden()
+                            .tint(AppColors.primary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color.black.opacity(0.5))
+                    .cornerRadius(20)
+                    .padding(.trailing, 16)
+                }
+                .padding(.top, 8)
+
+                // Camera preview
+                ZStack {
+                    // Show live camera preview
+                    CameraPreview(session: cameraManager.session)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 20)
+
+                    // Food detection indicator
+                    if cameraManager.isAutoCaptureEnabled {
+                        VStack {
+                            Spacer()
+
+                            if cameraManager.isFoodDetected {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+
+                                    Text("Food Detected")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 14, weight: .semibold))
+
+                                    Text(String(format: "%.0f%%", cameraManager.detectionConfidence * 100))
+                                        .foregroundColor(.white.opacity(0.8))
+                                        .font(.system(size: 12))
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(Color.green.opacity(0.8))
+                                .cornerRadius(20)
+                                .padding(.bottom, 20)
+                            } else {
+                                HStack(spacing: 8) {
+                                    ProgressView()
+                                        .tint(.white)
+                                        .scaleEffect(0.8)
+
+                                    Text("Looking for food...")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 14, weight: .medium))
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 10)
+                                .background(Color.black.opacity(0.6))
+                                .cornerRadius(20)
+                                .padding(.bottom, 20)
+                            }
+                        }
+                    }
                 }
 
+                // Bottom controls
+                VStack(spacing: 16) {
+                    if cameraManager.isAutoCaptureEnabled {
+                        Text("Point camera at food for automatic capture")
+                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 14))
+                            .multilineTextAlignment(.center)
+                    } else {
+                        Text("Tap the button to capture")
+                            .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 14))
+                    }
+
+                    // Capture button (only enabled in manual mode)
+                    Button(action: {
+                        cameraManager.capturePhoto()
+                    }) {
+                        Circle()
+                            .stroke(cameraManager.isAutoCaptureEnabled ? Color.gray : AppColors.primary, lineWidth: 4)
+                            .frame(width: 70, height: 70)
+                            .overlay(
+                                Circle()
+                                    .fill(cameraManager.isAutoCaptureEnabled ? Color.gray : AppColors.primary)
+                                    .frame(width: 60, height: 60)
+                            )
+                    }
+                    .disabled(cameraManager.isAutoCaptureEnabled)
+                    .opacity(cameraManager.isAutoCaptureEnabled ? 0.5 : 1.0)
+                }
+                .padding(.bottom, 40)
+            }
+        }
+        .onAppear {
+            cameraManager.startSession()
+        }
+        .onDisappear {
+            cameraManager.stopSession()
+        }
+        .onChange(of: cameraManager.capturedImage) { image in
+            if image != nil {
+                showImagePreview = true
+            }
+        }
+        .sheet(isPresented: $showImagePreview) {
+            if let image = cameraManager.capturedImage {
+                ImagePreviewView(
+                    image: image,
+                    isAnalyzing: $isAnalyzing,
+                    onConfirm: { description in
+                        handleImageConfirmation(image: image, description: description)
+                    },
+                    onRetry: {
+                        showImagePreview = false
+                        cameraManager.resetCamera()
+                    }
+                )
+            }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func handleImageConfirmation(image: UIImage, description: String) {
+        isAnalyzing = true
+
+        MealAnalysisService.shared.analyzeImage(image: image, description: description) { result in
+            isAnalyzing = false
+
+            switch result {
+            case .success(let response):
+                // Handle successful response
+                print("Analysis successful: \(response)")
+                // TODO: Navigate to meal details or save the meal
+                dismiss()
+
+            case .failure(let error):
+                errorMessage = "Failed to analyze image: \(error.localizedDescription)"
+                showError = true
+                print("Analysis error: \(error)")
+            }
+        }
+    }
+}
+
+// MARK: - Image Preview View
+struct ImagePreviewView: View {
+    let image: UIImage
+    @Binding var isAnalyzing: Bool
+    let onConfirm: (String) -> Void
+    let onRetry: () -> Void
+
+    @State private var description: String = ""
+    @FocusState private var isDescriptionFocused: Bool
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            VStack {
                 Spacer()
 
-                // Camera preview placeholder
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.gray.opacity(0.3))
-                    .aspectRatio(3/4, contentMode: .fit)
-                    .overlay(
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 60))
-                            .foregroundColor(AppColors.textSecondary)
-                    )
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
                     .padding()
 
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Add Description (optional)")
+                        .foregroundColor(.white.opacity(0.7))
+                        .font(.system(size: 14))
+
+                    TextField("e.g., Large size, with extra cheese", text: $description)
+                        .focused($isDescriptionFocused)
+                        .padding()
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(10)
+                        .foregroundColor(.white)
+                        .textInputAutocapitalization(.sentences)
+                }
+                .padding(.horizontal, 30)
+
                 Spacer()
 
-                // Capture button
-                Button(action: {}) {
-                    Circle()
-                        .stroke(AppColors.primary, lineWidth: 4)
-                        .frame(width: 70, height: 70)
-                        .overlay(
-                            Circle()
-                                .fill(AppColors.primary)
-                                .frame(width: 60, height: 60)
-                        )
+                HStack(spacing: 20) {
+                    Button(action: onRetry) {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("Retake")
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 16)
+                        .background(Color.gray.opacity(0.8))
+                        .cornerRadius(12)
+                    }
+                    .disabled(isAnalyzing)
+
+                    Button(action: {
+                        isDescriptionFocused = false
+                        onConfirm(description.isEmpty ? "Large size" : description)
+                    }) {
+                        HStack {
+                            if isAnalyzing {
+                                ProgressView()
+                                    .tint(.white)
+                                    .scaleEffect(0.8)
+                                Text("Analyzing...")
+                            } else {
+                                Image(systemName: "checkmark")
+                                Text("Use Photo")
+                            }
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 16)
+                        .background(isAnalyzing ? AppColors.primary.opacity(0.6) : AppColors.primary)
+                        .cornerRadius(12)
+                    }
+                    .disabled(isAnalyzing)
                 }
                 .padding(.bottom, 40)
             }

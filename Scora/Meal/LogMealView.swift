@@ -25,7 +25,6 @@ struct LogMealView: View {
                     Spacer()
                     
                     VStack(spacing: 24) {
-                        // Photo option
                         LogOptionCard(
                             icon: "camera.fill",
                             title: "Take a Photo",
@@ -33,7 +32,6 @@ struct LogMealView: View {
                             action: { viewModel.openCamera() }
                         )
                         
-                        // Voice option
                         LogOptionCard(
                             icon: "mic.fill",
                             title: "Voice Log",
@@ -41,7 +39,6 @@ struct LogMealView: View {
                             action: { viewModel.openVoiceLog() }
                         )
                         
-                        // Manual option
                         LogOptionCard(
                             icon: "keyboard",
                             title: "Type It In",
@@ -90,15 +87,14 @@ struct LogOptionCard: View {
         Button(action: action) {
             HStack(spacing: 20) {
                 Image(systemName: icon)
-                    .font(.system(size: 32))
                     .foregroundColor(AppColors.primary)
-                    .frame(width: 60, height: 60)
+                    .frame(width: 32, height: 32)
                     .background(AppColors.primary.opacity(0.1))
-                    .cornerRadius(12)
+                    .cornerRadius(6)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(AppColors.textPrimary)
 
                     Text(subtitle)
