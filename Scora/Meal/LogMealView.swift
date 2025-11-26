@@ -25,6 +25,14 @@ struct LogMealView: View {
                     Spacer()
                     
                     VStack(spacing: 24) {
+                        NavigationLink(
+                            destination: CameraView(),
+                            isActive: $viewModel.navigateToCamera
+                        ) {
+                            EmptyView()
+                        }
+                        .hidden()
+                        
                         LogOptionCard(
                             icon: "camera.fill",
                             title: "Take a Photo",
@@ -64,9 +72,6 @@ struct LogMealView: View {
                 }
             }
             .navigationBarHidden(true)
-        }
-        .sheet(isPresented: $viewModel.showCamera) {
-            CameraView()
         }
         .sheet(isPresented: $viewModel.showVoiceLog) {
             VoiceLogView()

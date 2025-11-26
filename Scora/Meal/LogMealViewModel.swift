@@ -8,12 +8,12 @@
 import SwiftUI
 
 class LogMealViewModel: ObservableObject {
-    @Published var showCamera = false
+    @Published var navigateToCamera = false
     @Published var showVoiceLog = false
     @Published var showManualEntry = false
 
     func openCamera() {
-        showCamera = true
+        navigateToCamera = true
     }
 
     func openVoiceLog() {

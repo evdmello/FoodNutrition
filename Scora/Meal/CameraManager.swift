@@ -14,6 +14,7 @@ class CameraManager: NSObject, ObservableObject {
     @Published var capturedImage: UIImage?
     @Published var isFoodDetected = false
     @Published var detectionConfidence: Float = 0.0
+    @Published var isShowingCapturedImage: Bool = false
 
     let session = AVCaptureSession()
     private let videoOutput = AVCaptureVideoDataOutput()
@@ -31,6 +32,12 @@ class CameraManager: NSObject, ObservableObject {
         super.init()
         setupCamera()
         setupVision()
+        print("🎥 CameraManager initialized")
+    }
+
+    deinit {
+        print("🎥 CameraManager deallocated")
+        session.stopRunning()
     }
 
     private func setupCamera() {
@@ -41,6 +48,7 @@ class CameraManager: NSObject, ObservableObject {
         guard let camera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
               let input = try? AVCaptureDeviceInput(device: camera),
               session.canAddInput(input) else {
+            print("Failed to setup camera input")
             session.commitConfiguration()
             return
         }
@@ -52,14 +60,26 @@ class CameraManager: NSObject, ObservableObject {
             session.addOutput(videoOutput)
             videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
             videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
+            print("Video output added successfully")
         }
 
         // Add photo output for capturing
         if session.canAddOutput(photoOutput) {
             session.addOutput(photoOutput)
+
+            // Configure photo output settings
+            photoOutput.isHighResolutionCaptureEnabled = true
+            if photoOutput.isDepthDataDeliverySupported {
+                photoOutput.isDepthDataDeliveryEnabled = false
+            }
+
+            print("Photo output added successfully")
+        } else {
+            print("Failed to add photo output")
         }
 
         session.commitConfiguration()
+        print("Camera session configuration completed")
     }
 
     private func setupVision() {
@@ -141,16 +161,44 @@ class CameraManager: NSObject, ObservableObject {
     }
 
     func capturePhoto() {
+        print("capturePhoto() called")
+
         // Set capturing flag to stop detection
         isCapturing = true
 
-        let settings = AVCapturePhotoSettings()
-
         sessionQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self else {
+                print("Self is nil in capturePhoto")
+                return
+            }
+
+            print("Session is running: \(self.session.isRunning)")
+
+            // Verify the session is running
+            guard self.session.isRunning else {
+                print("Session is not running, cannot capture photo")
+                DispatchQueue.main.async {
+                    self.isCapturing = false
+                }
+                return
+            }
+
+            // Verify photo output connection
+            guard let connection = self.photoOutput.connection(with: .video) else {
+                print("No video connection available for photo output")
+                DispatchQueue.main.async {
+                    self.isCapturing = false
+                }
+                return
+            }
+
+            print("Photo output connection established: \(connection)")
+
+            // Configure photo settings
+            let settings = AVCapturePhotoSettings()
+
             self.photoOutput.capturePhoto(with: settings, delegate: self)
-            // Stop the session after capturing
-            self.session.stopRunning()
+            print("capturePhoto called on photoOutput")
         }
     }
 }
@@ -173,12 +221,63 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
 
 // MARK: - AVCapturePhotoCaptureDelegate
 extension CameraManager: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        guard let imageData = photo.fileDataRepresentation(),
-              let image = UIImage(data: imageData) else { return }
+    func photoOutput(_ output: AVCapturePhotoOutput, willBeginCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+        print("📸 DELEGATE: willBeginCaptureFor called")
+    }
 
+    func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
+        print("📸 DELEGATE: willCapturePhotoFor called")
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: (any Error)?) {
+        print("📸 DELEGATE: didFinishCaptureFor called")
+        if let error = error {
+            print("📸 DELEGATE: Error in didFinishCaptureFor: \(error.localizedDescription)")
+        }
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishCapturingDeferredPhotoProxy deferredPhotoProxy: AVCaptureDeferredPhotoProxy?, error: (any Error)?) {
+        print("📸 DELEGATE: didFinishCapturingDeferredPhotoProxy called")
+        if let error = error {
+            print("📸 DELEGATE: Error in didFinishCapturingDeferredPhotoProxy: \(error.localizedDescription)")
+        }
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        print("📸 DELEGATE: didFinishProcessingPhoto called")
+
+        if let error = error {
+            print("📸 DELEGATE: Error capturing photo: \(error.localizedDescription)")
+            DispatchQueue.main.async { [weak self] in
+                self?.isCapturing = false
+            }
+            return
+        }
+
+        guard let imageData = photo.fileDataRepresentation() else {
+            print("📸 DELEGATE: Failed to get photo data representation")
+            DispatchQueue.main.async { [weak self] in
+                self?.isCapturing = false
+            }
+            return
+        }
+
+        print("📸 DELEGATE: Got image data, size: \(imageData.count) bytes")
+
+        guard let image = UIImage(data: imageData) else {
+            print("📸 DELEGATE: Failed to create UIImage from data")
+            DispatchQueue.main.async { [weak self] in
+                self?.isCapturing = false
+            }
+            return
+        }
+
+        print("📸 DELEGATE: Photo captured successfully, size: \(image.size)")
         DispatchQueue.main.async { [weak self] in
-            self?.capturedImage = image
+            guard let self else { return }
+            self.capturedImage = image
+            self.isShowingCapturedImage = true
+            print("📸 DELEGATE: Set capturedImage and isShowingCapturedImage on main thread")
         }
     }
 }

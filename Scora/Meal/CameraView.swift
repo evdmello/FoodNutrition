@@ -10,7 +10,6 @@ import SwiftUI
 struct CameraView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var cameraManager = CameraManager()
-    @State private var showImagePreview = false
     @State private var isAnalyzing = false
     @State private var showError = false
     @State private var errorMessage = ""
@@ -20,24 +19,13 @@ struct CameraView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Top bar with controls
                 HStack {
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.white)
-                            .font(.system(size: 20))
-                            .padding()
-                    }
-
-                    Spacer()
-
-                    // Auto-capture toggle
                     HStack(spacing: 8) {
                         Image(systemName: cameraManager.isAutoCaptureEnabled ? "eye.fill" : "hand.tap.fill")
                             .foregroundColor(.white)
                             .font(.system(size: 16))
 
-                        Text(cameraManager.isAutoCaptureEnabled ? "Auto" : "Manual")
+                        Text(cameraManager.isAutoCaptureEnabled ? "Auto Capture" : "Manual")
                             .foregroundColor(.white)
                             .font(.system(size: 14, weight: .medium))
 
@@ -142,12 +130,11 @@ struct CameraView: View {
         .onDisappear {
             cameraManager.stopSession()
         }
-        .onChange(of: cameraManager.capturedImage) { image in
-            if image != nil {
-                showImagePreview = true
+        .sheet(isPresented: $cameraManager.isShowingCapturedImage, onDismiss: {
+            if !isAnalyzing {
+                cameraManager.capturedImage = nil
             }
-        }
-        .sheet(isPresented: $showImagePreview) {
+        }) {
             if let image = cameraManager.capturedImage {
                 ImagePreviewView(
                     image: image,
@@ -156,7 +143,7 @@ struct CameraView: View {
                         handleImageConfirmation(image: image, description: description)
                     },
                     onRetry: {
-                        showImagePreview = false
+                        cameraManager.isShowingCapturedImage = false
                         cameraManager.resetCamera()
                     }
                 )
@@ -219,7 +206,7 @@ struct ImagePreviewView: View {
                         .foregroundColor(.white.opacity(0.7))
                         .font(.system(size: 14))
 
-                    TextField("e.g., Large size, with extra cheese", text: $description)
+                    TextField("e.g., Chicken Burger with Fries", text: $description)
                         .focused($isDescriptionFocused)
                         .padding()
                         .background(Color.white.opacity(0.1))
@@ -271,5 +258,11 @@ struct ImagePreviewView: View {
                 .padding(.bottom, 40)
             }
         }
+    }
+}
+
+struct CameraView_Previews: PreviewProvider {
+    static var previews: some View {
+        CameraView()
     }
 }
