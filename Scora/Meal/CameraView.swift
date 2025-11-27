@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct CameraView: View {
     @Environment(\.dismiss) var dismiss
@@ -15,6 +16,8 @@ struct CameraView: View {
     @State private var errorMessage = ""
     @State private var mealAnalysisResponse: MealAnalysisResponse?
     @State private var showAnalysisResult = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var selectedPhotoImage: UIImage?
 
     var body: some View {
         ZStack {
@@ -22,6 +25,25 @@ struct CameraView: View {
 
             VStack(spacing: 0) {
                 HStack {
+                    PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "photo.on.rectangle")
+                                .foregroundColor(.white)
+                                .font(.system(size: 16))
+
+                            Text("Gallery")
+                                .foregroundColor(.white)
+                                .font(.system(size: 14, weight: .medium))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.5))
+                        .cornerRadius(20)
+                    }
+                    .padding(.leading, 16)
+
+                    Spacer()
+
                     HStack(spacing: 8) {
                         Image(systemName: cameraManager.isAutoCaptureEnabled ? "eye.fill" : "hand.tap.fill")
                             .foregroundColor(.white)
@@ -157,6 +179,18 @@ struct CameraView: View {
         }) {
             if let response = mealAnalysisResponse {
                 MealAnalysisResultView(response: response)
+            }
+        }
+        .onChange(of: selectedPhotoItem) { newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    await MainActor.run {
+                        selectedPhotoImage = image
+                        cameraManager.capturedImage = image
+                        cameraManager.isShowingCapturedImage = true
+                    }
+                }
             }
         }
     }
