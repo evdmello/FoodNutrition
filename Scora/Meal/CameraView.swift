@@ -13,6 +13,8 @@ struct CameraView: View {
     @State private var isAnalyzing = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var mealAnalysisResponse: MealAnalysisResponse?
+    @State private var showAnalysisResult = false
 
     var body: some View {
         ZStack {
@@ -149,21 +151,35 @@ struct CameraView: View {
         } message: {
             Text(errorMessage)
         }
+        .fullScreenCover(isPresented: $showAnalysisResult, onDismiss: {
+            // Dismiss the camera view after the result view is dismissed
+            dismiss()
+        }) {
+            if let response = mealAnalysisResponse {
+                MealAnalysisResultView(response: response)
+            }
+        }
     }
 
     private func handleImageConfirmation(image: UIImage, description: String) {
         isAnalyzing = true
 
         MealAnalysisService.shared.analyzeImage(image: image, description: description) { result in
-            isAnalyzing = false
+            Task { @MainActor in
+                isAnalyzing = false
 
-            switch result {
-            case .success(let response):
-                dismiss()
+                switch result {
+                case .success(let response):
+                    // Store the response and show the result view
+                    mealAnalysisResponse = response
+                    cameraManager.isShowingCapturedImage = false
+                    showAnalysisResult = true
 
-            case .failure(let error):
-                errorMessage = "Failed to analyze image: \(error.localizedDescription)"
-                showError = true
+                case .failure(let error):
+                    errorMessage = "Failed to analyze image: \(error.localizedDescription)"
+                    showError = true
+                    cameraManager.isShowingCapturedImage = false
+                }
             }
         }
     }

@@ -189,6 +189,7 @@ class MealAnalysisService {
         let boundary = UUID().uuidString
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.timeoutInterval = 180
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
@@ -230,14 +231,11 @@ class MealAnalysisService {
             }
 
             do {
+                print("Analysis Response: \(String(data: data, encoding: .utf8) ?? "")")
                 let analysisResponse = try JSONDecoder().decode(MealAnalysisResponse.self, from: data)
-                DispatchQueue.main.async {
-                    completion(.success(analysisResponse))
-                }
+                completion(.success(analysisResponse))
             } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
+                completion(.failure(error))
             }
         }.resume()
     }

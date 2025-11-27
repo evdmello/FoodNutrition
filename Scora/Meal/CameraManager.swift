@@ -104,7 +104,7 @@ class CameraManager: NSObject, ObservableObject {
 
             guard !self.isCapturing else { return }
 
-            self.isFoodDetected = foodFound && maxConfidence > 0.5
+            self.isFoodDetected = foodFound && maxConfidence >= 0.6
             self.detectionConfidence = maxConfidence
 
             if self.isFoodDetected && self.isAutoCaptureEnabled {
