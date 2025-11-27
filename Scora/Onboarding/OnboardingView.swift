@@ -121,7 +121,6 @@ struct LoadingScreen: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            // Animated logo or loading indicator
             Circle()
                 .fill(AppColors.primary.opacity(0.2))
                 .frame(width: 80, height: 80)

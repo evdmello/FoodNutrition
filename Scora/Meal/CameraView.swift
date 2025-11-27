@@ -41,15 +41,12 @@ struct CameraView: View {
                 }
                 .padding(.top, 8)
 
-                // Camera preview
                 ZStack {
-                    // Show live camera preview
                     CameraPreview(session: cameraManager.session)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 20)
 
-                    // Food detection indicator
                     if cameraManager.isAutoCaptureEnabled {
                         VStack {
                             Spacer()
@@ -92,7 +89,6 @@ struct CameraView: View {
                     }
                 }
 
-                // Bottom controls
                 VStack(spacing: 16) {
                     if cameraManager.isAutoCaptureEnabled {
                         Text("Point camera at food for automatic capture")
@@ -105,7 +101,6 @@ struct CameraView: View {
                             .font(.system(size: 14))
                     }
 
-                    // Capture button (only enabled in manual mode)
                     Button(action: {
                         cameraManager.capturePhoto()
                     }) {
@@ -164,21 +159,16 @@ struct CameraView: View {
 
             switch result {
             case .success(let response):
-                // Handle successful response
-                print("Analysis successful: \(response)")
-                // TODO: Navigate to meal details or save the meal
                 dismiss()
 
             case .failure(let error):
                 errorMessage = "Failed to analyze image: \(error.localizedDescription)"
                 showError = true
-                print("Analysis error: \(error)")
             }
         }
     }
 }
 
-// MARK: - Image Preview View
 struct ImagePreviewView: View {
     let image: UIImage
     @Binding var isAnalyzing: Bool

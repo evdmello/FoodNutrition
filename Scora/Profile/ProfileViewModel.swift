@@ -60,7 +60,6 @@ class ProfileViewModel: ObservableObject {
 
             isLoading = false
         } catch {
-            print("❌ Error fetching profile: \(error.localizedDescription)")
             errorMessage = error.localizedDescription
             isLoading = false
         }
@@ -69,9 +68,8 @@ class ProfileViewModel: ObservableObject {
     func logout() async {
         do {
             try await supabase.auth.signOut()
-            print("✅ Successfully logged out")
         } catch {
-            print("❌ Logout error: \(error.localizedDescription)")
+            print("Logout error: \(error.localizedDescription)")
         }
     }
 }

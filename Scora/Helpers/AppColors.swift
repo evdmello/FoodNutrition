@@ -24,7 +24,7 @@ extension Color {
         Scanner(string: hex).scanHexInt64(&int)
         let a, r, g, b: UInt64
         switch hex.count {
-        case 6: // RGB (24-bit)
+        case 6: 
             (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
         default:
             (a, r, g, b) = (255, 0, 0, 0)

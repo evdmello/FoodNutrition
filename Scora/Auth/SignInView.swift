@@ -23,7 +23,6 @@ struct SignInView: View {
 
             ScrollView {
                 VStack(spacing: 24) {
-                    // Header
                     VStack(spacing: 8) {
                         Text("Welcome Back")
                             .font(.system(size: 32, weight: .bold))
@@ -36,7 +35,6 @@ struct SignInView: View {
                     .padding(.top, 80)
                     .padding(.bottom, 40)
 
-                    // Input Fields
                     VStack(spacing: 16) {
                         CustomTextField(
                             placeholder: "Email",

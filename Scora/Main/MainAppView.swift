@@ -61,13 +61,9 @@ struct MainAppView: View {
             let expiresAt = Date(timeIntervalSince1970: TimeInterval(session.expiresAt))
 
             if expiresAt <= currentDate {
-                print("⚠️ Session expired in MainAppView")
                 onSignOut()
-            } else {
-                print("✅ Valid session in MainAppView for user: \(session.user.email ?? "unknown")")
             }
         } catch {
-            print("❌ Session validation failed in MainAppView: \(error.localizedDescription)")
             onSignOut()
         }
 

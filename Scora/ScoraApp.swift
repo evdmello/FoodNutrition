@@ -21,7 +21,6 @@ struct ScoraApp: App {
         WindowGroup {
             Group {
                 if isCheckingAuth {
-                    // Show a loading view while checking authentication
                     ZStack {
                         AppColors.background.ignoresSafeArea()
                         VStack(spacing: 16) {
@@ -75,25 +74,17 @@ struct ScoraApp: App {
 
     private func checkAuthStatus() async {
         do {
-            // Check if there's a valid session
             let session = try await supabase.auth.session
 
-            // Verify the session is valid and not expired
             let currentDate = Date()
             let expiresAt = Date(timeIntervalSince1970: TimeInterval(session.expiresAt))
 
             if expiresAt > currentDate {
-                // Session is valid
                 isAuthenticated = true
-                print("✅ Valid session found for user: \(session.user.email ?? "unknown")")
             } else {
-                // Session expired
                 isAuthenticated = false
-                print("⚠️ Session expired")
             }
         } catch {
-            // No valid session found
-            print("❌ No valid session: \(error.localizedDescription)")
             isAuthenticated = false
         }
 
@@ -107,20 +98,20 @@ struct ScoraApp: App {
                 await MainActor.run {
                     switch state.event {
                     case .signedIn:
-                        print("✅ User signed in: \(state.session?.user.email ?? "unknown")")
+                        print("User signed in: \(state.session?.user.email ?? "unknown")")
                         isAuthenticated = true
                     case .signedOut:
-                        print("👋 User signed out")
+                        print("User signed out")
                         isAuthenticated = false
                     case .tokenRefreshed:
-                        print("🔄 Token refreshed")
+                        print("Token refreshed")
                         isAuthenticated = true
                     case .userUpdated:
-                        print("📝 User updated")
+                        print("User updated")
                     case .passwordRecovery:
-                        print("🔑 Password recovery")
+                        print("Password recovery")
                     case .userDeleted:
-                        print("🗑️ User deleted")
+                        print("User deleted")
                         isAuthenticated = false
                     default:
                         break

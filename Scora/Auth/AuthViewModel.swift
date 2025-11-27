@@ -61,16 +61,11 @@ class AuthViewModel: ObservableObject {
                 email: email,
                 password: password
             )
-
-            // Successfully signed in
             isSignInSuccessful = true
             isLoading = false
-            print("✅ Successfully signed in: \(session.user.email ?? "unknown")")
-
         } catch {
             isLoading = false
             errorMessage = error.localizedDescription
-            print("❌ Sign in error: \(error)")
         }
     }
 
@@ -105,7 +100,6 @@ class AuthViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            // Sign up with Supabase Auth
             let response = try await supabase.auth.signUp(
                 email: email,
                 password: password,
@@ -114,15 +108,12 @@ class AuthViewModel: ObservableObject {
                     "last_name": .string(lastName)
                 ]
             )
-
-            // Successfully signed up
             isSignUpSuccessful = true
             isLoading = false
 
         } catch {
             isLoading = false
             errorMessage = error.localizedDescription
-            print("Sign up error: \(error)")
         }
     }
 }

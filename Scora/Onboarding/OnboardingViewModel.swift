@@ -67,7 +67,6 @@ final class OnboardingViewModel: ObservableObject {
             screens = data.data.screens
         } catch {
             self.error = error
-            print("Error loading onboarding data: \(error)")
         }
 
         isLoading = false
@@ -100,13 +99,11 @@ final class OnboardingViewModel: ObservableObject {
             userAnswers[screen.id] != nil
         }
 
-        // If all questions are answered, submit answers
         if allQuestionsAnswered && userAnswers.count == questionScreens.count {
             Task {
                 await submitAnswers()
             }
         } else {
-            // Auto-advance for questions
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.nextScreen()
             }
@@ -118,10 +115,8 @@ final class OnboardingViewModel: ObservableObject {
         isLoading = true
         error = nil
 
-        // Get all question screens in order
         let questionScreens = screens.filter { $0.type == .question }.sorted { $0.id < $1.id }
 
-        // Create answers array in the order of question screens
         let answersArray = questionScreens.compactMap { screen in
             userAnswers[screen.id]
         }
@@ -129,17 +124,10 @@ final class OnboardingViewModel: ObservableObject {
         do {
             let response = try await repository.submitAnswers(answersArray)
 
-            // Find the last question screen index
-//            if let lastQuestionIndex = screens.lastIndex(where: { $0.type == .question }) {
-//                // Append the new screens from the response
-//
-//            }
             screens.append(contentsOf: response.data.screens)
-            // Move to the next screen (results screen)
             self.nextScreen()
         } catch {
             self.error = error
-            print("Error submitting answers: \(error)")
         }
 
         isLoading = false

@@ -23,7 +23,6 @@ struct SignUpView: View {
 
             ScrollView {
                 VStack(spacing: 24) {
-                    // Header
                     VStack(spacing: 8) {
                         Text("Create Account")
                             .font(.system(size: 32, weight: .bold))
@@ -36,7 +35,6 @@ struct SignUpView: View {
                     .padding(.top, 60)
                     .padding(.bottom, 20)
 
-                    // Input Fields
                     VStack(spacing: 16) {
                         CustomTextField(
                             placeholder: "First Name",
@@ -99,7 +97,6 @@ struct SignUpView: View {
                     }
                     .padding(.horizontal, 24)
 
-                    // Error Message
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
                             .font(.system(size: 14))
@@ -108,7 +105,6 @@ struct SignUpView: View {
                             .padding(.horizontal, 24)
                     }
 
-                    // Sign Up Button
                     PrimaryButton(
                         title: viewModel.isLoading ? "Signing Up..." : "Sign Up",
                         action: {
@@ -125,7 +121,6 @@ struct SignUpView: View {
                     .padding(.horizontal, 24)
                     .padding(.top, 8)
 
-                    // Switch to Sign In
                     Button(action: {
                         viewModel.resetForm()
                         onSwitchToSignIn()
@@ -149,15 +144,6 @@ struct SignUpView: View {
         .onTapGesture {
             focusedField = nil
         }
-//        .toolbar {
-//            ToolbarItemGroup(placement: .keyboard) {
-//                Spacer()
-//                Button("Done") {
-//                    focusedField = nil
-//                }
-//                .foregroundColor(AppColors.primary)
-//            }
-//        }
     }
 }
 

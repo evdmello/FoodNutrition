@@ -44,7 +44,6 @@ final class LocalOnboardingRepository {
 
             let resultResponse = try decoder.decode(OnboardingResultResponse.self, from: data)
 
-            // Convert OnboardingResultResponse to OnboardingResponse
             return OnboardingResponse(
                 status: resultResponse.status,
                 data: OnboardingData(

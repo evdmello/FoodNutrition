@@ -18,19 +18,14 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
-                        // Header
                         HeaderSection()
 
-                        // Today's Score Card
                         TodayScoreCard(score: viewModel.todayScore)
 
-                        // BioAge Card
                         BioAgeCard(bioAge: viewModel.bioAge, chronologicalAge: viewModel.chronologicalAge)
 
-                        // Weekly Goals
                         WeeklyGoalsSection(goals: viewModel.weeklyGoals)
 
-                        // Recent Meals
                         RecentMealsSection(meals: viewModel.recentMeals)
                     }
                     .padding()
@@ -56,7 +51,6 @@ struct HeaderSection: View {
 
             Spacer()
 
-            // Notification bell
             Button(action: {}) {
                 Image(systemName: "bell.fill")
                     .foregroundColor(AppColors.textSecondary)
@@ -162,7 +156,6 @@ struct MetricPill: View {
     }
 }
 
-// Flexible layout that automatically arranges pills into rows
 struct FlexiblePillLayout<Item: Hashable, Content: View>: View {
     let items: [Item]
     let itemsPerRow: Int
@@ -331,7 +324,6 @@ struct MealLogRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            // Meal image
             RoundedRectangle(cornerRadius: 12)
                 .fill(AppColors.cardBackground)
                 .frame(width: 60, height: 60)
@@ -368,7 +360,6 @@ struct MealLogRow: View {
     }
 }
 
-// HomeViewModel.swift
 class HomeViewModel: ObservableObject {
     @Published var todayScore: Int = 77
     @Published var bioAge: Int = 32
