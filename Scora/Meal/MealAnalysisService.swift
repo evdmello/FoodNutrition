@@ -208,10 +208,12 @@ class MealAnalysisService {
         body.append(imageData)
         body.append("\r\n".data(using: .utf8)!)
 
+        // Close boundary
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
         request.httpBody = body
 
+        // Perform the request
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
